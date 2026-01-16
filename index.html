@@ -9,7 +9,7 @@
       --bg:#ffffff;
       --card:#ffffff;
       --line:#e6e6e6;
-      --muted:#888;
+      --muted:#777;
       --accent:#d33;
       --soft:#f7f4fb;
       --soft2:#fdeee2;
@@ -18,50 +18,57 @@
       --font: system-ui, -apple-system, "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
     }
     body{ margin:0; background:var(--bg); font-family:var(--font); color:#222; }
-    .wrap{ max-width:1180px; margin:26px auto; padding:0 18px; }
-    h1{ font-size:22px; margin:0 0 14px; font-weight:800; }
+    .wrap{ max-width:1180px; margin:22px auto; padding:0 18px; }
+    h1{ font-size:20px; margin:0 0 12px; font-weight:900; }
+
     .grid{ display:grid; grid-template-columns: 1fr 0.95fr; gap:18px; align-items:start; }
-    .panel{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; }
+    .panel{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px; }
+
     .box{ border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff; }
     table{ width:100%; border-collapse:collapse; }
-    th, td{ padding:12px 12px; border-bottom:1px solid var(--line); vertical-align:middle; }
+    th, td{ padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:middle; }
     tr:last-child td{ border-bottom:none; }
-    th{ background:var(--soft); font-weight:800; text-align:center; }
-    .mini th{ background:var(--soft); }
-    .leftLabel{ width:140px; background:var(--soft2); font-weight:800; text-align:center; }
+    th{ background:var(--soft); font-weight:900; text-align:center; }
+
+    .leftLabel{ width:140px; background:var(--soft2); font-weight:900; text-align:center; }
     .red{ color:var(--accent); font-weight:900; }
     .right{ text-align:right; }
     .center{ text-align:center; }
+    .muted{ color:var(--muted); }
+
     input[type="text"], input[type="number"]{
       width:100%;
-      padding:10px 12px;
+      padding:9px 11px;
       border:1px solid var(--line);
       border-radius:10px;
-      font-size:16px;
+      font-size:15px;
       outline:none;
       box-sizing:border-box;
       background:#fff;
     }
     input[type="number"]{ text-align:right; }
     input:focus{ border-color:#c7b7ff; box-shadow:0 0 0 3px rgba(120,82,255,.12); }
+
     .controls{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
     button{
       border:1px solid var(--line);
       background:#fff;
-      padding:10px 14px;
+      padding:9px 13px;
       border-radius:12px;
       cursor:pointer;
-      font-weight:800;
+      font-weight:900;
     }
     button:hover{ background:#fafafa; }
-    .hint{ margin-top:10px; color:var(--muted); font-size:13px; }
-    .twoBoxes{ display:grid; gap:14px; }
-    .subTitle{ font-weight:900; margin:8px 0 10px; }
-    .stickyNote{
-      font-size:13px; color:#666; margin-top:10px;
-    }
-    .muted{ color:var(--muted); }
-    .badgeNeg{ color:var(--accent); font-weight:900; }
+    .hint{ margin-top:10px; color:var(--muted); font-size:13px; line-height:1.35; }
+    .note{ margin-top:10px; font-size:13px; color:#666; }
+
+    .profitNeg{ color:var(--accent); font-weight:900; }
+    .profitPos{ color:#111; font-weight:900; }
+
+    /* 讓右側表格看起來像你截圖那種 */
+    .multTable td{ background:#fff; }
+    .multTable th{ background:var(--soft); }
+    .multInput{ max-width:120px; margin:0 auto; }
   </style>
 </head>
 
@@ -70,173 +77,139 @@
     <h1>成本毛利計算表（網頁版）</h1>
 
     <div class="grid">
-      <!-- 左側：輸入與成本 -->
-      <div class="panel">
-        <div class="twoBoxes">
-          <!-- 上方：品名/賣價/成本/毛利 -->
-          <div class="box">
-            <table>
-              <tr>
-                <td class="leftLabel">品名</td>
-                <td><input id="productName" type="text" placeholder="例如：特殊布套" /></td>
-              </tr>
-              <tr>
-                <td class="leftLabel red">賣價</td>
-                <td><input id="sellPrice" type="number" inputmode="decimal" min="0" step="0.1" placeholder="例如：250" /></td>
-              </tr>
-              <tr>
-                <td class="leftLabel">成本總計</td>
-                <td class="right"><span id="totalCost">0</span></td>
-              </tr>
-              <tr>
-                <td class="leftLabel">銷售毛利率</td>
-                <td class="right"><span id="grossMargin">—</span></td>
-              </tr>
-              <tr>
-                <td class="leftLabel">毛利額</td>
-                <td class="right"><span id="grossProfit" class="badgeNeg">0</span></td>
-              </tr>
-            </table>
-          </div>
-
-          <!-- 下方：材料明細 -->
-          <div class="box">
-            <table class="mini" id="materialsTable">
-              <tr>
-                <th style="width:38%">材料品名</th>
-                <th style="width:22%">單價</th>
-                <th>備註</th>
-              </tr>
-
-              <!-- 初始三列 -->
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 1" /></td>
-                <td><input type="number" class="matCost" value="45" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 2" /></td>
-                <td><input type="number" class="matCost" value="100" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 3" /></td>
-                <td><input type="number" class="matCost" value="10" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-
-              <!-- 預留多列（跟你截圖一樣到10列） -->
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 4" /></td>
-                <td><input type="number" class="matCost" value="0" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 5" /></td>
-                <td><input type="number" class="matCost" value="0" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 6" /></td>
-                <td><input type="number" class="matCost" value="0" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 7" /></td>
-                <td><input type="number" class="matCost" value="0" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 8" /></td>
-                <td><input type="number" class="matCost" value="0" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 9" /></td>
-                <td><input type="number" class="matCost" value="0" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-              <tr class="matRow">
-                <td><input type="text" class="matName" value="材料 10" /></td>
-                <td><input type="number" class="matCost" value="0" min="0" step="0.1" /></td>
-                <td><input type="text" class="matNote" /></td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="controls">
-            <button id="addRowBtn">+新增一列</button>
-            <button id="clearBtn">清空</button>
-            <button id="exportBtn">匯出 Excel（CSV）</button>
-          </div>
-
-          <div class="stickyNote">銷售毛利率 =（賣價 − 成本總計）÷ 賣價</div>
-        </div>
-      </div>
-
-      <!-- 右側：倍率建議售價 -->
+      <!-- 左側 -->
       <div class="panel">
         <div class="box">
-          <table id="multTable">
+          <table>
+            <tr>
+              <td class="leftLabel">品名</td>
+              <td><input id="productName" type="text" placeholder="例如：特殊杯套" /></td>
+            </tr>
+            <tr>
+              <td class="leftLabel red">賣價</td>
+              <td><input id="sellPrice" type="number" inputmode="decimal" min="0" step="0.1" placeholder="例如：250" /></td>
+            </tr>
+            <tr>
+              <td class="leftLabel">成本總計</td>
+              <td class="right"><span id="totalCost">0</span></td>
+            </tr>
+            <tr>
+              <td class="leftLabel">銷售毛利率</td>
+              <td class="right"><span id="grossMargin">—</span></td>
+            </tr>
+            <tr>
+              <td class="leftLabel">毛利額</td>
+              <td class="right"><span id="grossProfit" class="profitNeg">0</span></td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="box">
+          <table id="materialsTable">
+            <tr>
+              <th style="width:38%">材料品名</th>
+              <th style="width:22%">單價</th>
+              <th>備註</th>
+            </tr>
+            <!-- 初始 10 列（跟你截圖一致） -->
+            <tbody id="materialsBody"></tbody>
+          </table>
+        </div>
+
+        <div class="controls">
+          <button id="btnAdd" type="button">+新增一列</button>
+          <button id="btnClear" type="button">清空</button>
+          <button id="btnExport" type="button">匯出 Excel（CSV）</button>
+        </div>
+
+        <div class="note">銷售毛利率 =（賣價 − 成本總計）÷ 賣價</div>
+      </div>
+
+      <!-- 右側 -->
+      <div class="panel">
+        <div class="box">
+          <table class="multTable" id="multTable">
             <tr>
               <th style="width:28%">倍率</th>
               <th>建議賣價</th>
               <th style="width:32%">銷售毛利率</th>
             </tr>
+
             <tr class="multRow">
-              <td><input type="number" class="mult" value="1.4" step="0.1" /></td>
+              <td class="center"><input class="mult multInput" type="number" value="1.4" step="0.1" min="0" /></td>
               <td class="right"><span class="suggestPrice">0</span></td>
-              <td class="right"><span class="suggestMargin">—</span></td>
+              <td class="right"><span class="suggestMargin">28.57%</span></td>
             </tr>
             <tr class="multRow">
-              <td><input type="number" class="mult" value="1.5" step="0.1" /></td>
+              <td class="center"><input class="mult multInput" type="number" value="1.5" step="0.1" min="0" /></td>
               <td class="right"><span class="suggestPrice">0</span></td>
-              <td class="right"><span class="suggestMargin">—</span></td>
+              <td class="right"><span class="suggestMargin">33.33%</span></td>
             </tr>
             <tr class="multRow">
-              <td><input type="number" class="mult" value="1.6" step="0.1" /></td>
+              <td class="center"><input class="mult multInput" type="number" value="1.6" step="0.1" min="0" /></td>
               <td class="right"><span class="suggestPrice">0</span></td>
-              <td class="right"><span class="suggestMargin">—</span></td>
+              <td class="right"><span class="suggestMargin">37.50%</span></td>
             </tr>
             <tr class="multRow">
-              <td><input type="number" class="mult" value="1.7" step="0.1" /></td>
+              <td class="center"><input class="mult multInput" type="number" value="1.7" step="0.1" min="0" /></td>
               <td class="right"><span class="suggestPrice">0</span></td>
-              <td class="right"><span class="suggestMargin">—</span></td>
+              <td class="right"><span class="suggestMargin">41.18%</span></td>
             </tr>
           </table>
         </div>
 
         <div class="hint">
-          小提醒：右邊是「成本 × 倍率」的建議價，跟左邊你手動輸入的賣價是分開的（但都會跟著成本變動）。
+          小提醒：右邊是「成本 × 倍率」的建議價，倍率變動也會即時更新。<br>
+          左邊你手動輸入賣價時，上方毛利與毛利率會即時更新（已修正）。
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // --------- helpers ----------
+    // =========================
+    //  穩定版：事件委派 + 可靠計算
+    // =========================
     const $ = (sel, root=document) => root.querySelector(sel);
     const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
     function num(v){
-      const n = parseFloat(v);
+      const n = parseFloat(String(v ?? "").replace(/,/g,"").trim());
       return Number.isFinite(n) ? n : 0;
     }
 
     function fmtMoney(n){
-      // 盡量保留 1 位小數（你倍率會出現 .5）
-      const isInt = Math.abs(n - Math.round(n)) < 1e-9;
-      return isInt ? String(Math.round(n)) : String(Math.round(n * 10) / 10);
+      // 盡量顯示到 1 位小數（遇到整數就不顯示小數）
+      const r = Math.round(n * 10) / 10;
+      const isInt = Math.abs(r - Math.round(r)) < 1e-9;
+      return isInt ? String(Math.round(r)) : String(r);
     }
 
-    function fmtPct(n){
-      if (!Number.isFinite(n)) return "—";
-      return (Math.round(n * 10000) / 100).toFixed(2) + "%";
+    function fmtPct(p){
+      if (!Number.isFinite(p)) return "—";
+      return (Math.round(p * 10000) / 100).toFixed(2) + "%";
     }
 
-    // --------- core calc ----------
+    // 初始化材料列：預設 10 列
+    function buildInitialMaterials(){
+      const tbody = $("#materialsBody");
+      tbody.innerHTML = "";
+      for (let i=1; i<=10; i++){
+        const tr = document.createElement("tr");
+        tr.className = "matRow";
+        tr.innerHTML = `
+          <td><input type="text" class="matName" value="材料 ${i}" /></td>
+          <td><input type="number" class="matCost" value="0" min="0" step="0.1" /></td>
+          <td><input type="text" class="matNote" value="" /></td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
     function getTotalCost(){
-      return $$(".matCost").reduce((sum, inp) => sum + num(inp.value), 0);
+      return $$(".matCost").reduce((sum, el) => sum + num(el.value), 0);
     }
 
     function updateLeft(){
@@ -246,8 +219,11 @@
       $("#totalCost").textContent = fmtMoney(cost);
 
       const profit = sell - cost;
-      $("#grossProfit").textContent = fmtMoney(profit);
-      $("#grossProfit").classList.toggle("badgeNeg", profit < 0);
+      const profitEl = $("#grossProfit");
+      profitEl.textContent = fmtMoney(profit);
+
+      profitEl.classList.toggle("profitNeg", profit < 0);
+      profitEl.classList.toggle("profitPos", profit >= 0);
 
       const margin = sell > 0 ? (profit / sell) : NaN;
       $("#grossMargin").textContent = sell > 0 ? fmtPct(margin) : "—";
@@ -256,13 +232,13 @@
     function updateRight(){
       const cost = getTotalCost();
       $$(".multRow").forEach(row => {
-        const mult = num($(".mult", row).value) || 0;
+        const mult = num($(".mult", row).value);
         const suggest = cost * mult;
 
         $(".suggestPrice", row).textContent = fmtMoney(suggest);
 
-        // 依建議售價計算毛利率（固定公式：1 - 1/倍率），避免浮點誤差也更直觀
-        const m = mult > 0 ? (1 - (1 / mult)) : NaN;
+        // 毛利率 = 1 - 1/倍率（倍率<=0 顯示—）
+        const m = mult > 0 ? (1 - 1 / mult) : NaN;
         $(".suggestMargin", row).textContent = mult > 0 ? fmtPct(m) : "—";
       });
     }
@@ -272,85 +248,97 @@
       updateRight();
     }
 
-    // --------- events ----------
-    function bindLiveEvents(){
-      // ⭐關鍵：賣價要即時觸發
-      $("#sellPrice").addEventListener("input", recalcAll);
+    // 事件委派：任何 input 變動都能觸發，不怕新增列失效
+    document.addEventListener("input", (e) => {
+      const t = e.target;
 
-      // 材料單價變動
-      $$(".matCost").forEach(inp => {
-        inp.addEventListener("input", recalcAll);
-      });
+      if (t.id === "sellPrice") {
+        recalcAll();
+        return;
+      }
 
-      // 倍率變動
-      $$(".mult").forEach(inp => {
-        inp.addEventListener("input", recalcAll);
-      });
-    }
+      if (t.classList.contains("matCost")) {
+        recalcAll();
+        return;
+      }
 
-    // 新增一列
-    $("#addRowBtn").addEventListener("click", () => {
-      const table = $("#materialsTable");
-      const rowCount = $$(".matRow", table).length;
+      if (t.classList.contains("mult")) {
+        // 倍率改動：右邊要更新（成本沒變，但毛利率/建議價會變）
+        updateRight();
+        return;
+      }
+    });
+
+    // 新增一列（不壞版）
+    $("#btnAdd").addEventListener("click", () => {
+      const tbody = $("#materialsBody");
+      const idx = $$(".matRow", tbody).length + 1;
       const tr = document.createElement("tr");
       tr.className = "matRow";
       tr.innerHTML = `
-        <td><input type="text" class="matName" value="材料 ${rowCount + 1}" /></td>
+        <td><input type="text" class="matName" value="材料 ${idx}" /></td>
         <td><input type="number" class="matCost" value="0" min="0" step="0.1" /></td>
-        <td><input type="text" class="matNote" /></td>
+        <td><input type="text" class="matNote" value="" /></td>
       `;
-      table.appendChild(tr);
-
-      // 只綁新增那格就好
-      $(".matCost", tr).addEventListener("input", recalcAll);
+      tbody.appendChild(tr);
       recalcAll();
     });
 
-    // 清空
-    $("#clearBtn").addEventListener("click", () => {
+    // 清空（會同步重算）
+    $("#btnClear").addEventListener("click", () => {
       $("#productName").value = "";
       $("#sellPrice").value = "";
 
-      $$(".matRow").forEach((r, idx) => {
-        $(".matName", r).value = idx < 3 ? ["布料","工資","拉鍊"][idx] : `材料 ${idx + 1}`;
-        $(".matCost", r).value = idx < 3 ? [45,100,10][idx] : 0;
+      // 清空材料
+      $$(".matRow").forEach((r, i) => {
+        $(".matName", r).value = `材料 ${i+1}`;
+        $(".matCost", r).value = 0;
         $(".matNote", r).value = "";
       });
 
-      $$(".mult").forEach((m, idx) => {
-        m.value = [1.4,1.5,1.6,1.7][idx] ?? 1.5;
-      });
+      // 恢復倍率
+      const defaults = [1.4, 1.5, 1.6, 1.7];
+      $$(".mult").forEach((m, i) => m.value = defaults[i] ?? 1.5);
 
       recalcAll();
     });
 
-    // 匯出 CSV（Excel 可開）
-    $("#exportBtn").addEventListener("click", () => {
+    // 匯出 CSV（Excel 可正常開、UTF-8 BOM、防逗號破壞）
+    $("#btnExport").addEventListener("click", () => {
       const product = $("#productName").value.trim();
       const sell = num($("#sellPrice").value);
       const cost = getTotalCost();
       const profit = sell - cost;
       const margin = sell > 0 ? (profit / sell) : NaN;
 
+      const q = (s) => {
+        const v = String(s ?? "");
+        // CSV 安全：包雙引號並處理內部雙引號
+        return `"${v.replace(/"/g,'""')}"`;
+      };
+
       const lines = [];
-      lines.push(["品名", product].join(","));
-      lines.push(["賣價", sell].join(","));
-      lines.push(["成本總計", cost].join(","));
-      lines.push(["毛利額", profit].join(","));
-      lines.push(["銷售毛利率", sell > 0 ? (Math.round(margin*10000)/100).toFixed(2)+"%" : ""].join(","));
+      lines.push([q("品名"), q(product)].join(","));
+      lines.push([q("賣價"), q(fmtMoney(sell))].join(","));
+      lines.push([q("成本總計"), q(fmtMoney(cost))].join(","));
+      lines.push([q("毛利額"), q(fmtMoney(profit))].join(","));
+      lines.push([q("銷售毛利率"), q(sell > 0 ? fmtPct(margin) : "")].join(","));
       lines.push("");
-      lines.push(["材料品名","單價","備註"].join(","));
+
+      lines.push([q("材料品名"), q("單價"), q("備註")].join(","));
 
       $$(".matRow").forEach(r => {
-        const n = $(".matName", r).value.replaceAll(",", "，");
+        const name = $(".matName", r).value.trim();
         const c = num($(".matCost", r).value);
-        const note = $(".matNote", r).value.replaceAll(",", "，");
-        // 空白列就不輸出
-        if ((n||"").trim()==="" && c===0 && (note||"").trim()==="") return;
-        lines.push([n, c, note].join(","));
+        const note = $(".matNote", r).value.trim();
+
+        // 若整列都空/0，就不輸出
+        if (!name && c === 0 && !note) return;
+
+        lines.push([q(name), q(fmtMoney(c)), q(note)].join(","));
       });
 
-      const csv = "\uFEFF" + lines.join("\n"); // BOM for Excel UTF-8
+      const csv = "\uFEFF" + lines.join("\n"); // Excel UTF-8 BOM
       const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
 
@@ -364,11 +352,9 @@
       URL.revokeObjectURL(url);
     });
 
-    // 初始綁定與初次計算
-    bindLiveEvents();
+    // 初次載入
+    buildInitialMaterials();
     recalcAll();
   </script>
 </body>
 </html>
-
-
